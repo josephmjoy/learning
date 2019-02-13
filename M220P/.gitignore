@@ -1,0 +1,7 @@
+# We're not checking these sub directories because we never modify them
+# Besides, data is huge.
+*.zip
+*.swp
+data/
+api/
+build/
