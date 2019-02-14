@@ -5,3 +5,6 @@
 data/
 api/
 build/
+mflix-venv/
+__pycache__/
+.ipynb_checkpoints/
