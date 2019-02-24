@@ -234,9 +234,10 @@ def get_movies(filters, page, movies_per_page):
     the Pymongo cursor.
     """
 
-    # TODO: Paging
+    # Paging
     # Use the cursor to only return the movies that belong on the current page.
-    movies = cursor.limit(movies_per_page)
+    skipamt = page * movies_per_page
+    movies = cursor.skip(skipamt).limit(movies_per_page)
 
     return (list(movies), total_num_movies)
 
