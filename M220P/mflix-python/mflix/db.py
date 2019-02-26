@@ -260,12 +260,33 @@ def get_movie(id):
         Embed the joined comments in a new field called "comments".
         """
 
-        # TODO: Get Comments
+        # DONE: Get Comments
         # Implement the required pipeline.
         pipeline = [
             {
-                "$match": {
-                    "_id": ObjectId(id)
+                '$match': {
+                    '_id': ObjectId(id)
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'comments', 
+                    'let': {
+                        'id': '$_id'
+                    }, 
+                    'pipeline': [
+                        {
+                            '$match': {
+                                '$expr': {
+                                    '$eq': [
+                                        '$movie_id', '$$id'
+                                    ]
+                                }
+                            }
+                        },
+                        { '$sort': {'date': -1}}
+                    ], 
+                    'as': 'comments'
                 }
             }
         ]
@@ -326,11 +347,26 @@ def add_comment(movie_id, user, comment, date):
 
     Name and email must be retrieved from the "user" object.
     """
-    # TODO: Create/Update Comments
+    # DONE: Create/Update Comments
     # Construct the comment document to be inserted into MongoDB.
-    comment_doc = { "some_field": "some_value" }
+    comment_doc = {
+            'name': user.name,
+            'email': user.email,
+            'movie_id': ObjectId(movie_id),
+            'text': comment,
+            'date': date
+        }
+
     return db.comments.insert_one(comment_doc)
 
+"""
+{'_id': ObjectId('5a9427648b0beebeb69579cc'),
+ 'name': 'Andrea Le',
+ 'email': 'andrea_le@fakegmail.com',
+ 'movie_id': ObjectId('573a1390f29313caabcd418c'),
+ 'text': 'Rem officiis eaque repellendus amet eos doloribus. Porro dolor voluptatum voluptates neque culpa molestias. Voluptate unde nulla temporibus ullam.',
+ 'date': datetime.datetime(2012, 3, 26, 23, 20, 16)}
+"""
 
 def update_comment(comment_id, user_email, text, date):
     """
@@ -338,12 +374,12 @@ def update_comment(comment_id, user_email, text, date):
     based by both comment _id field as well as the email field to doubly ensure
     the user has permission to edit this comment.
     """
-    # TODO: Create/Update Comments
+    # DONE: Create/Update Comments
     # Use the user_email and comment_id to select the proper comment, then
     # update the "text" and "date" of the selected comment.
     response = db.comments.update_one(
-        { "some_field": "some_value" },
-        { "$set": { "some_other_field": "some_other_value" } }
+            { 'email': user_email, '_id': ObjectId(comment_id) },
+            { "$set": { 'text': text, 'date': date } }
     )
 
     return response
