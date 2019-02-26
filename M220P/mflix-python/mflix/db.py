@@ -410,9 +410,11 @@ def add_user(name, email, hashedpw):
     try:
         # DONE: User Management
         # Insert a user with the "name", "email", and "password" fields.
-        # TODO: Durable Writes
+        # DONE: Durable Writes
         # Use a more durable Write Concern for this operation.
-        db.users.insert_one({
+        wc_majority = WriteConcern(w='majority')
+        durable_users = db.users.with_options(write_concern=wc_majority)
+        durable_users.insert_one({
             "name": name,
             "email": email,
             "password": hashedpw
