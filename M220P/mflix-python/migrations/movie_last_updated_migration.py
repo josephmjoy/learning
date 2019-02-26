@@ -14,16 +14,17 @@ us. We just need to make sure the correct operations are sent to MongoDB!
 """
 
 # ensure you update your host information below!
-host = "mongodb://localhost:27017"
-mflix = MongoClient(host)["mflix"]
+uri = "mongodb+srv://m220student:m220password@mflix-jgme7.mongodb.net/test"
+client = MongoClient(uri)
+mflix = client["mflix"]
 
-# TODO: Create the proper predicate and projection
+# DONE: Create the proper predicate and projection
 # add a predicate that checks that the "lastupdated" field exists, and then
 # checks that its type is a string
 # a projection is not required, but may help reduce the amount of data sent
 # over the wire!
-predicate = {"some_field": {"$some_operator": "some_expression"}}
-projection = None
+predicate = {"lastupdated": {"$exists": True, '$type': 'string' }}
+projection = {'lastupdated': 1}
 
 cursor = mflix.movies.find(predicate, projection)
 
@@ -42,12 +43,12 @@ for doc in cursor:
 print(f"{len(movies_to_migrate)} documents to migrate")
 
 try:
-    # TODO: Complete the UpdateOne statement below
+    # DONE: Complete the UpdateOne statement below
     # build the UpdateOne so it updates the "lastupdated" field to contain
     # the new ISODate() type
     bulk_updates = [UpdateOne(
         {"_id": movie.get("doc_id")},
-        {"$some_update_operator": {"some_field_to_update"}}
+        {"$set": {"lastupdated": movie.get("lastupdated") }}
     ) for movie in movies_to_migrate]
 
     # here's where the bulk operation is sent to MongoDB
