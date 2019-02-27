@@ -196,7 +196,7 @@ def build_query_sort_project(filters):
             searches MongoDB for movies with that genre.
             """
 
-            # TODO: Text and Subfield Search
+            # DONE: Text and Subfield Search
             # Construct a query that will search for the chosen genre.
             query = {"genres": {"$in": filters["genres"]}}
 
@@ -298,7 +298,7 @@ def get_movie(id):
 
     # TODO: Error Handling
     # If an invalid ID is passed to `get_movie`, it should return None.
-    except (StopIteration) as _:
+    except (StopIteration, InvalidId) as _:
 
         """
         Ticket: Error Handling
